@@ -14,6 +14,20 @@ const TrendingTables = () => {
   const topVolume = volumeTokens || [];
   const topGain = gainTokens || [];
 
+  // Helper function to render price change safely
+  const renderPriceChange = (h24: number | undefined | null) => {
+    // Gunakan nullish coalescing (??) untuk fallback ke 0 jika h24 adalah null atau undefined
+    const change = h24 ?? 0;
+    const colorClass = change >= 0 ? 'text-green-500' : 'text-red-500';
+    const sign = change >= 0 ? '+' : '';
+
+    return (
+      <span className={`text-sm ${colorClass}`}>
+        {sign}{change.toFixed(1)}%
+      </span>
+    );
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Trending by Votes */}
@@ -33,7 +47,8 @@ const TrendingTables = () => {
             topVoted.map((token) => (
               <Link
                 key={token.pairAddress}
-                to={`/token/${token.baseToken.address}`}
+                // Pastikan token.baseToken ada sebelum mengakses address
+                to={`/token/${token.baseToken?.address || ''}`}
                 className="flex items-center justify-between hover:bg-accent/50 p-2 rounded-lg transition-colors"
               >
                 <div className="flex items-center gap-2">
@@ -46,9 +61,8 @@ const TrendingTables = () => {
                   )}
                   <span className="font-medium text-sm">{token.baseToken.symbol}</span>
                 </div>
-                <span className="text-sm text-green-500">
-                  +{token.priceChange.h24.toFixed(1)}%
-                </span>
+                {/* SAFE ACCESS: Menggunakan helper function */}
+                {renderPriceChange(token.priceChange?.h24)}
               </Link>
             ))
           )}
@@ -72,7 +86,7 @@ const TrendingTables = () => {
             topVolume.map((token) => (
               <Link
                 key={token.pairAddress}
-                to={`/token/${token.baseToken.address}`}
+                to={`/token/${token.baseToken?.address || ''}`}
                 className="flex items-center justify-between hover:bg-accent/50 p-2 rounded-lg transition-colors"
               >
                 <div className="flex items-center gap-2">
@@ -85,16 +99,15 @@ const TrendingTables = () => {
                   )}
                   <span className="font-medium text-sm">{token.baseToken.symbol}</span>
                 </div>
-                <span className={`text-sm ${token.priceChange.h24 >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {token.priceChange.h24 >= 0 ? '+' : ''}{token.priceChange.h24.toFixed(1)}%
-                </span>
+                {/* SAFE ACCESS: Menggunakan helper function */}
+                {renderPriceChange(token.priceChange?.h24)}
               </Link>
             ))
           )}
         </CardContent>
       </Card>
 
-      {/* Trending by Price Gain */}
+      {/* Trending by Price Gain (Biggest Gainers) */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
@@ -111,7 +124,7 @@ const TrendingTables = () => {
             topGain.map((token) => (
               <Link
                 key={token.pairAddress}
-                to={`/token/${token.baseToken.address}`}
+                to={`/token/${token.baseToken?.address || ''}`}
                 className="flex items-center justify-between hover:bg-accent/50 p-2 rounded-lg transition-colors"
               >
                 <div className="flex items-center gap-2">
@@ -124,9 +137,8 @@ const TrendingTables = () => {
                   )}
                   <span className="font-medium text-sm">{token.baseToken.symbol}</span>
                 </div>
-                <span className="text-sm text-green-500">
-                  +{token.priceChange.h24.toFixed(1)}%
-                </span>
+                {/* SAFE ACCESS: Menggunakan helper function */}
+                {renderPriceChange(token.priceChange?.h24)}
               </Link>
             ))
           )}
